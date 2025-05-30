@@ -18,6 +18,8 @@ let buttons = document.querySelectorAll(".button")
 const operands = ["+", "-", "X", "/"];
 let pointpressed = false;
 let operandPressed = false; 
+let justEvaluated = false;
+
 
 buttons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -27,13 +29,33 @@ buttons.forEach((button) => {
             operate();
         }
         // only 1 operand
-        if(operands.includes(btn) && operandPressed == false) {
-            operandPressed = true;
-            pointpressed = false;
-            output.textContent = output.textContent + btn;
-            display.appendChild(output);
-            return;
+      if (operands.includes(btn)) {
+    // Check if an operator already exists and we have two numbers
+    let str = output.textContent;
+    let idx = -1;
+
+    for (let i = 0; i < str.length; i++) {
+        if (operands.includes(str[i])) {
+            idx = i;
+            break;
         }
+    }
+
+    if (operandPressed && idx !== -1 && idx < str.length - 1) {
+        operate(); // evaluate current expression like 1+1
+        str = output.textContent; // update str to the result
+    }
+
+    operandPressed = true;
+    pointpressed = false;
+    justEvaluated = false;
+    output.textContent = output.textContent + btn;
+    display.appendChild(output);
+    return;
+}
+
+
+
         // only 1 decimal point
         if(btn === "." && pointpressed == false) {
             pointpressed = true;
@@ -43,6 +65,13 @@ buttons.forEach((button) => {
         }
         //all the numbers
         if(btn >= 0 && btn <= 9) {
+            if (justEvaluated) {
+                output.textContent = "";
+                justEvaluated = false;
+                operandPressed = false;
+                pointpressed = false;
+            }
+
             output.textContent = output.textContent + btn;
             display.appendChild(output);
             return;
@@ -66,9 +95,10 @@ function operate() {
 
     //checking the type of operand
     switch (op) {
-        case '+':
+        case '+': { 
             add(firstNum, secondNum);
             break;
+        }
         case '-':
             subtract(firstNum, secondNum);
             break;
@@ -100,14 +130,11 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
-    if (b == 0) {
-        output.textContent = "lol noob";
-        return;
-    }
     result(a/b);
     return;
 }
 
 function result(ans) {
     output.textContent = ans;
+    justEvaluated = true;
 }
