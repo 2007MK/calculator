@@ -28,6 +28,27 @@ buttons.forEach((button) => {
         if(btn === "=") {
             operate();
         }
+        if(btn === "clear") {
+            output.textContent = "";
+            operandPressed = false;
+            pointpressed = false;
+            justEvaluated = false;
+            return
+        }
+        if (btn === "backspace") {
+            let current = output.textContent;
+            if(current.length > 0) {
+                let lastChar = current.slice(-1);
+                if(operands.includes(lastChar)) {
+                    operandPressed = false;
+                }
+                if(lastChar === ".") {
+                    pointpressed = false;
+                }
+                output.textContent = current.slice(0, -1);
+            }
+            return;
+        }
         // only 1 operand
       if (operands.includes(btn)) {
     // Check if an operator already exists and we have two numbers
@@ -53,8 +74,6 @@ buttons.forEach((button) => {
     display.appendChild(output);
     return;
 }
-
-
 
         // only 1 decimal point
         if(btn === "." && pointpressed == false) {
